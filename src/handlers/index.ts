@@ -5,7 +5,7 @@ import { logger } from "../logging";
 import {
   clerkController,
   securityController,
-  settingsController,
+  preferencesController,
 } from "../controllers";
 
 dispatcher.get("/", async () => {
@@ -17,9 +17,13 @@ dispatcher.get("/", async () => {
   };
 });
 
-dispatcher.get("/settings", (event) => settingsController.getSettings(event));
+dispatcher.get("/preferences", (event) =>
+  preferencesController.getPreferences(event),
+);
 
-dispatcher.patch("/settings", (event) => settingsController.update(event));
+dispatcher.patch("/preferences", (event) =>
+  preferencesController.update(event),
+);
 
 dispatcher.post("/webhooks/clerk", (event) =>
   clerkController.processClerkWebhook(event),

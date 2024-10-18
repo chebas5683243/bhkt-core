@@ -1,12 +1,12 @@
 import * as lambda from "aws-lambda";
-import { SettingsService } from "../services/SettingsService";
+import { PreferencesService } from "../services/PreferencesService";
 import { BaseController } from "./BaseController";
 import { ClerkService } from "../services/ClerkService";
 import { ClerkEvent } from "../domains/ClerkEvent";
 import { ClerkEventType } from "../types/ClerkEvent";
 
 export interface ClerkControllerProps {
-  settingsService: SettingsService;
+  preferencesService: PreferencesService;
   clerkService: ClerkService;
 }
 
@@ -40,7 +40,7 @@ export class ClerkController extends BaseController {
             type: body.type,
           });
 
-          await this.props.settingsService.createDefaultSettings(
+          await this.props.preferencesService.createDefaultPreferences(
             clerkEvent.data.id,
           );
 

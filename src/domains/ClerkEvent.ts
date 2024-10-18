@@ -24,7 +24,7 @@ export class ClerkEvent<T = any> {
 
     if (!validation.success) {
       throw new BadRequestError({
-        message: `InvalidSettingAttributes : ${JSON.stringify(validation.error.errors)}`,
+        message: `InvalidClerkAttributes : ${JSON.stringify(validation.error.errors)}`,
       });
     }
 

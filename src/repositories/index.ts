@@ -1,7 +1,7 @@
 import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { SettingsRepositoryImpl } from "./SettingsRepositoryImpl";
-import { SETTINGS_TABLE } from "../config";
+import { PreferencesRepositoryImpl } from "./PreferencesRepositoryImpl";
+import { PREFERENCES_TABLE } from "../config";
 
 const dynamoDbClient = DynamoDBDocumentClient.from(new DynamoDBClient({}), {
   marshallOptions: {
@@ -10,9 +10,9 @@ const dynamoDbClient = DynamoDBDocumentClient.from(new DynamoDBClient({}), {
   },
 });
 
-export const settingsRepo = new SettingsRepositoryImpl({
+export const preferencesRepo = new PreferencesRepositoryImpl({
   dynamoDbClient,
   config: {
-    settingsTable: SETTINGS_TABLE,
+    preferencesTable: PREFERENCES_TABLE,
   },
 });

@@ -4,13 +4,13 @@ import {
   CLERK_PUBLIC_KEY,
   CLERK_WEBHOOK_SECRET,
 } from "../config";
-import { settingsRepo } from "../repositories";
+import { preferencesRepo } from "../repositories";
 import { ClerkServiceImpl } from "./ClerkServiceImpl";
 import { SecurityServiceImpl } from "./SecurityServiceImpl";
-import { SettingsServiceImpl } from "./SettingsServiceImpl";
+import { PreferencesServiceImpl } from "./PreferencesServiceImpl";
 
-export const settingsService = new SettingsServiceImpl({
-  settingsRepo,
+export const preferencesService = new PreferencesServiceImpl({
+  preferencesRepo,
 });
 
 export const securityService = new SecurityServiceImpl({

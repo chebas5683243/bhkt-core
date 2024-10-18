@@ -5,48 +5,48 @@ import {
   UpdateCommand,
 } from "@aws-sdk/lib-dynamodb";
 import { ConditionalCheckFailedException } from "@aws-sdk/client-dynamodb";
-import { SettingsRepository } from "./SettingsRepository";
-import { Setting } from "../domains/Setting";
+import { PreferencesRepository } from "./PreferencesRepository";
+import { Preferences } from "../domains/Preferences";
 import { UnknownError } from "../errors/UnknownError";
-import { SettingsMapper } from "../mappers/SettingsMapper";
+import { PreferencesMapper } from "../mappers/PreferencesMapper";
 import { NotFoundError } from "../errors/NotFoundError";
 import { AbstractDynamoDbRepository } from "./AbstractDynamoDbRepository";
 import { GlobalError } from "../errors/GlobalError";
 
-interface SettingsRepositoryProps {
+interface PreferencesRepositoryProps {
   dynamoDbClient: DynamoDBDocumentClient;
   config: {
-    settingsTable?: string;
+    preferencesTable?: string;
   };
 }
 
-export class SettingsRepositoryImpl
+export class PreferencesRepositoryImpl
   extends AbstractDynamoDbRepository
-  implements SettingsRepository
+  implements PreferencesRepository
 {
-  constructor(private props: SettingsRepositoryProps) {
+  constructor(private props: PreferencesRepositoryProps) {
     super();
 
-    if (!this.props.config.settingsTable) {
+    if (!this.props.config.preferencesTable) {
       throw new UnknownError({
-        detail: "Missing Settings Table env variable",
+        detail: "Missing Preferences Table env variable",
       });
     }
   }
 
-  async findByUserId(userId: string): Promise<Setting> {
+  async findByUserId(userId: string): Promise<Preferences> {
     let error;
     try {
       const { Item } = await this.props.dynamoDbClient.send(
         new GetCommand({
-          TableName: this.props.config.settingsTable,
+          TableName: this.props.config.preferencesTable,
           Key: {
             userId,
           },
         }),
       );
 
-      if (Item) return SettingsMapper.unmarshalSetting(Item);
+      if (Item) return PreferencesMapper.unmarshalPreferences(Item);
       error = new NotFoundError();
     } catch (e: any) {
       throw new UnknownError({ detail: e.message });
@@ -54,23 +54,21 @@ export class SettingsRepositoryImpl
     throw error || new UnknownError();
   }
 
-  async update(setting: Setting): Promise<Setting> {
+  async update(preferences: Preferences): Promise<Preferences> {
     try {
-      const request = new Setting({
-        ...setting,
+      const request = new Preferences({
+        ...preferences,
         lastUpdateDate: this.getTimestamp(),
       });
 
       const updateExpression = this.getUpdateExpression(request, [
-        "currency",
-        "language",
-        "themePreference",
+        Array.from({ length: 20 }).map((_, index) => `q${index + 1}`) as any,
         "lastUpdateDate",
       ]);
 
       const { Attributes: updatedItem } = await this.props.dynamoDbClient.send(
         new UpdateCommand({
-          TableName: this.props.config.settingsTable,
+          TableName: this.props.config.preferencesTable,
           Key: {
             userId: request.user.id,
           },
@@ -80,7 +78,7 @@ export class SettingsRepositoryImpl
         }),
       );
 
-      return new Setting({
+      return new Preferences({
         id: updatedItem?.id,
         lastUpdateDate: updatedItem?.lastUpdateDate,
       });
@@ -92,10 +90,10 @@ export class SettingsRepositoryImpl
     }
   }
 
-  async create(setting: Setting): Promise<Setting> {
+  async create(preferences: Preferences): Promise<Preferences> {
     try {
-      const request = SettingsMapper.marshalSetting({
-        ...setting,
+      const request = PreferencesMapper.marshalPreferences({
+        ...preferences,
         id: this.getUUID(),
         lastUpdateDate: this.getTimestamp(),
       });
@@ -103,12 +101,12 @@ export class SettingsRepositoryImpl
       await this.props.dynamoDbClient.send(
         new PutCommand({
           Item: request,
-          TableName: this.props.config.settingsTable,
+          TableName: this.props.config.preferencesTable,
           ConditionExpression: "attribute_not_exists(userId)",
         }),
       );
 
-      return new Setting({
+      return new Preferences({
         id: request?.id,
         lastUpdateDate: request?.lastUpdateDate,
       });

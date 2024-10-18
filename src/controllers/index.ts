@@ -1,10 +1,10 @@
-import { clerkService, securityService, settingsService } from "../services";
-import { SettingsController } from "./SettingsController";
+import { clerkService, securityService, preferencesService } from "../services";
+import { PreferencesController } from "./PreferencesController";
 import { SecurityController } from "./SecurityController";
 import { ClerkController } from "./ClerkController";
 
-export const settingsController = new SettingsController({
-  service: settingsService,
+export const preferencesController = new PreferencesController({
+  service: preferencesService,
 });
 
 export const securityController = new SecurityController({
@@ -13,5 +13,5 @@ export const securityController = new SecurityController({
 
 export const clerkController = new ClerkController({
   clerkService,
-  settingsService,
+  preferencesService,
 });
