@@ -14,10 +14,8 @@ export class PreferencesController extends BaseController {
 
   async getPreferences(event: lambda.APIGatewayEvent) {
     try {
-      const { body } = this.parseRequest(event);
-
       const preferences = Preferences.instanceFor("findByUserId", {
-        user: { id: body.userId },
+        user: { id: event.queryStringParameters?.userId },
       });
       const response = await this.props.service.findByUserId(preferences);
 
