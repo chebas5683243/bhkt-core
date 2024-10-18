@@ -1,0 +1,15 @@
+# Ignore artifacts prettier:
+build
+coverage
+
+# Dependency directories
+node_modules/
+
+# TypeScript Dist
+dist
+
+# zip files
+*.zip
+
+# reports
+junit.xml
